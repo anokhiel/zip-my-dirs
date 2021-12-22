@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -75,14 +76,14 @@ public class Zipper implements Runnable {
     }
 
     public void pack(Path sourceDirPath, String zipFilePath) throws IOException {
+        if(Files.find(sourceDirPath, 1, (p2, bfa2) -> !Files.isDirectory(p2)).count() == 0){ return; }
         Path zip = Paths.get(zipFilePath);
         if (Files.exists(zip)) {
             Files.delete(zip);
         }
         Path p = Files.createFile(zip);
         try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p))) {
-            Files.find(sourceDirPath, 1, (p2, bfa2) -> !Files.isDirectory(p2))
-                    .forEach(path -> {
+            Files.find(sourceDirPath, 1, (p2, bfa2) -> !Files.isDirectory(p2)).forEach(path -> {
                         ZipEntry zipEntry = new ZipEntry(sourceDirPath.relativize(path).toString());
                         try {
                             zs.putNextEntry(zipEntry);
@@ -93,6 +94,7 @@ public class Zipper implements Runnable {
                             System.err.println(e);
                         }
                     });
+
         }
     }
 
