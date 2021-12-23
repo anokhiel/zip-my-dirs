@@ -43,7 +43,7 @@ public class Zipper implements Runnable {
         return directoryToBeDeleted.delete();
     }
 
-    private void doer(Path source, Path resultDir) throws Exception {
+    public void doer(Path source, Path resultDir) throws Exception {
 
         if (!Files.exists(resultDir)) {
             Files.createDirectory(resultDir);
@@ -102,6 +102,21 @@ public class Zipper implements Runnable {
         try {
             log.log(Level.INFO, "Depth is " + String.valueOf(Files.find(p, 1, (p1, bfa1) -> Files.isDirectory(p1)).toArray().length));
             return Files.find(p, 1, (p1, bfa1) -> Files.isDirectory(p1)).toArray().length > 1;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    /**
+     *
+     * For tests
+     *
+     */
+
+    public boolean hasFiles(Path p) {
+        try {
+            log.log(Level.INFO, "Files found is " + String.valueOf(Files.find(p, 1, (p1, bfa1) -> ! Files.isDirectory(p1)).toArray().length));
+            return Files.find(p, 1, (p1, bfa1) -> ! Files.isDirectory(p1)).toArray().length > 0;
         } catch (IOException e) {
             return false;
         }
